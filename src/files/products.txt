@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "title": "arroz",
+    "descripcion": "asdasdas",
+    "code": "ux1",
+    "price": 1000,
+    "status": true,
+    "stock": 10,
+    "category": "comida",
+    "thumbnails": {}
+  },
+  {
+    "id": 3,
+    "title": "fideos",
+    "descripcion": "legumbre",
+    "code": "aswe",
+    "price": "2000",
+    "stock": "32",
+    "category": "comida"
+  },
+  {
+    "id": 4,
+    "title": "lentejas",
+    "descripcion": "legumbres",
+    "code": "1322",
+    "price": "1500",
+    "stock": "12",
+    "category": "comida"
+  },
+  {
+    "id": 5,
+    "title": "coca-cola",
+    "descripcion": "bien fria",
+    "code": "341",
+    "price": "500",
+    "stock": "34",
+    "category": "bebestible"
+  },
+  {
+    "id": 6,
+    "title": "porotos",
+    "descripcion": "Chilenos",
+    "code": "prt45",
+    "price": "300",
+    "status": false,
+    "stock": "12",
+    "category": "legumbres"
+  }
+]

@@ -1,0 +1,211 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+
+/* Contenedor principal */
+.product-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Estilo para las tarjetas de producto */
+.product-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 15px;
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Hover effect */
+.product-card:hover {
+    transform: translateY(-10px);
+}
+
+/* Títulos y textos */
+.product-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.product-description {
+    font-size: 14px;
+    color: #777;
+    margin: 10px 0;
+}
+
+.product-code,
+.product-price,
+.product-stock,
+.product-category {
+    font-size: 16px;
+    color: #444;
+}
+
+.product-status {
+    margin-top: 15px;
+}
+
+.status-available {
+    color: green;
+    font-weight: bold;
+}
+
+.status-unavailable {
+    color: red;
+    font-weight: bold;
+}
+
+/* Espaciado para las miniaturas (si las agregas) */
+.product-thumbnails {
+    margin-top: 10px;
+}
+
+/* General */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Contenedor principal */
+.container {
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Títulos */
+h1, h2 {
+    color: #5a5a5a;
+}
+
+/* Botones */
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Formulario de producto */
+#formularioProducto {
+    background-color: #f9f9f9;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#formularioProducto input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#formularioProducto button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    background-color: #007BFF;
+    margin-top: 10px;
+}
+
+#formularioProducto button:hover {
+    background-color: #0056b3;
+}
+
+/* Selector para eliminar */
+#selectEliminar {
+    margin-top: 20px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.selectEliminar select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+}
+
+#selectEliminar button {
+    width: 100%;
+    padding: 12px;
+    background-color: #d9534f;
+    color: white;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+#selectEliminar button:hover {
+    background-color: #c9302c;
+}
+
+/* Lista de productos */
+#productosList {
+    list-style-type: none;
+    padding: 0;
+}
+
+#productosList li {
+    background-color: #f8f8f8;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+#productosList li strong {
+    font-size: 18px;
+    color: #333;
+}
+
+#productosList li p {
+    color: #666;
+    font-size: 14px;
+}
+
+#productosList li:last-child {
+    margin-bottom: 0;
+}
+
+/* Formulario y selector oculto */
+#formularioProducto, #selectEliminar {
+    display: none;
+}
+

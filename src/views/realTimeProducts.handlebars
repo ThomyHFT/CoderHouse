@@ -1,0 +1,55 @@
+
+    <div class="container">
+        <h1>Lista de Productos</h1>
+        <button id="agregarProductoBtn">Agregar Nuevo Producto</button>
+       
+        <div id="formularioProducto" style="display: none;">
+            <h2>Formulario de Producto</h2>
+            <form id="nuevoProductoForm">
+                <label for="title">Título:</label>
+                <input type="text" id="title" name="title" required><br>
+
+                <label for="descripcion">Descripción:</label>
+                <input type="text" id="descripcion" name="descripcion" required><br>
+
+                <label for="code">Código:</label>
+                <input type="text" id="code" name="code" required><br>
+
+                <label for="price">Precio:</label>
+                <input type="number" id="price" name="price" required><br>
+                
+                <div class="selectEliminar">
+                    <label for="status">Status:</label>
+                <select type="" id="status" name="status" required>
+                    <option value="1">Disponible</option>
+                    <option value="2">No Disponible</option>
+                </select>
+                </div><br>
+                
+
+                <label for="stock">Stock:</label>
+                <input type="number" id="stock" name="stock" required><br>
+
+                <label for="category">Categoría:</label>
+                <input type="text" id="category" name="category" required><br>
+
+                <button type="submit">Guardar Producto</button>
+            </form>
+        </div>
+        <button id="eliminarProductoBtn">Eliminar Producto</button>
+
+        <div class="selectEliminar" id="selectEliminar" style="display: none;">
+            <h2>Seleccionar Producto para Eliminar</h2>
+            <select id="productoEliminar">
+            </select>
+            <button id="eliminarProducto">Eliminar</button>
+        </div>
+
+        <h2>Productos Disponibles</h2>
+        <ul id="productosList">
+        </ul>
+
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/realTimeProducts.js"></script>
+
