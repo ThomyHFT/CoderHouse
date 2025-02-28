@@ -5,6 +5,7 @@ import RouteCarts from "./src/routes/route.carts.js";
 import handlebars from "express-handlebars"
 import __dirname from "./utils.js";
 import RouteRealTimeProducts from "./src/routes/route.realTimeProducts.js";
+import mongoose from "mongoose"
 
 
 
@@ -14,6 +15,20 @@ const puerto=8080;
 const httpServer=servidor.listen(puerto,()=>{
     console.log("servidor habilitado en el puerto: "+ puerto);
 });
+
+const connectDB = async () => {
+    try {
+    await mongoose.connect("mongodb+srv://ThomyHFT:123@cluster0.xazxy.mongodb.net/Proyecto_Final?retryWrites=true&w=majority&appName=Cluster0");
+      console.log("✅ Conectado a MongoDB");
+    } catch (error) {
+      console.error("❌ Error, no se pudo conectar a la base de datos:", error);
+      process.exit(1); // Finaliza el proceso si hay un error
+    }
+  };
+  
+  connectDB();
+
+
 const socketServer= new Server(httpServer);
 const  CargarProductos = async()=>{
     const response = await fetch(`http://localhost:8080/api/productos/`);

@@ -1,87 +1,89 @@
 
 import { Router } from "express";
 import fs from 'fs';
+import { productModel } from "../models/product.model.js";
 
 const RouteProducts=Router();
-let products=[];
-const existe=fs.existsSync("./src/files/products.txt");
-if(!existe){
-    products=fs.writeFileSync("./src/files/products.txt", JSON.stringify(products, null, 2));
-}
+RouteProducts.get("/",async(req,res)=>{
 
+    try{
+        let productos= await productModel.find()
+        const limit=req.query.limit;
+        res.send(limit? products.slice(0,limit): productos)
 
-
-RouteProducts.get("/",(req,res)=>{
-    let products=JSON.parse(fs.readFileSync("./src/files/products.txt", "utf-8"));
-    const limit=req.query.limit;
-    res.send(limit? products.slice(0,limit): products)
+    }
+    catch(e){
+        res.status(404).send("No se encontró el producto");
+    }
 });
 
 
-RouteProducts.get("/:pid",(req,res)=>{
-    let products=JSON.parse(fs.readFileSync("./src/files/products.txt", "utf-8"));
-    const producto=products.find(item=>item.id=== Number(req.params.pid));
+RouteProducts.get("/:pid",async(req,res)=>{
 
-    if (producto) {
-        return res.status(200).json(producto);
-    } else {
-        return res.status(404).send("No se encontró el producto");
+    try{
+        let productos= await productModel.find()
+        const producto=productos.find(item=>item.id=== Number(req.params.pid));
+        res.send(producto)
+
     }
+    catch(e){
+        res.status(404).send("No se encontró el producto");
+    }
+    
 })
 
-RouteProducts.post("/", (req,res)=>{
-    products=JSON.parse(fs.readFileSync("./src/files/products.txt", "utf-8"));
-    const ultimoId=products.reduce((max,products)=>(products.id > max? products.id: max),0);
-    const newProduct={
-        id:ultimoId+1,
-        title:req.body.title,
-        descripcion:req.body.descripcion,
-        code:req.body.code,
-        price:req.body.price,
-        status:req.body.status,
-        stock:req.body.stock,
-        category:req.body.category,
-        thumbnails:req.body.thumbnails
-    };
+RouteProducts.post("/", async(req,res)=>{
 
-    try {
-        products.push(newProduct);
-        fs.writeFileSync("./src/files/products.txt", JSON.stringify(products, null, 2));
-        res.send("Se agrego el nuevo producto: "+ JSON.stringify(newProduct))
-    } catch (error) {
-        res.status(500).send("Error al crear el producto: "+ error.message);
+    try{
+        let products= await productModel.find()
+        const ultimoId=products.reduce((max,products)=>(products.id > max? products.id: max),0);
+        const newProduct={
+            id:ultimoId+1,
+            title:req.body.title,
+            descripcion:req.body.descripcion,
+            code:req.body.code,
+            price:req.body.price,
+            status:req.body.status,
+            stock:req.body.stock,
+            category:req.body.category,
+            thumbnails: req.body.thumbnails || [],
+        };
+
+        let resutado = await productModel.create(newProduct)
+        res.send("Se agrego el nuevo producto")
+        
+
     }
+    catch(e){
+        res.status(404).send("No se actualizó el producto.");
+    }
+
     
     
 })
 
-RouteProducts.put("/:pid",(req,res)=>{
-    let products=JSON.parse(fs.readFileSync("./src/files/products.txt", "utf-8"));
-    const producto=products.find(item=>item.id=== Number(req.params.pid));
-    if(producto){
-        Object.assign(producto,req.body);
-        fs.writeFileSync("./src/files/products.txt", JSON.stringify(products, null, 2));
-        res.send("Producto actualizado: "+ JSON.stringify(producto));
+RouteProducts.put("/:pid",async(req,res)=>{
+
+    try{
+        let products= await productModel.find()
+        const producto=products.find(item=>item.id=== Number(req.params.pid));
+        let resultado = await productModel.updateOne({id:Number(req.params.pid)}, { $set: req.body } )
+        res.send("Producto Actualizado")
     }
-    else{
+    catch(e){
         res.status(404).send("No se encontró el producto.");
     }
 })
 
-RouteProducts.delete("/:pid", (req, res) => {
-    let products = JSON.parse(fs.readFileSync("./src/files/products.txt", "utf-8"));
+RouteProducts.delete("/:pid", async(req, res) => {
 
-    const producto = products.find(item => item.id === Number(req.params.pid));
-
-    if (!producto) {
-        return res.status(404).send("No se encontró el producto.");
+    try{
+        let resultado= await productModel.deleteOne({id:Number(req.params.pid)})
+        res.send("se eliminó correctamente")
     }
-
-    products = products.filter(item => item.id !== Number(req.params.pid));
-
-    fs.writeFileSync("./src/files/products.txt", JSON.stringify(products, null, 2));
-
-    res.send(`Producto eliminado correctamente: ${JSON.stringify(producto)}`);
+    catch(e){
+         res.status(404).send("No se eliminó el producto.");
+    }
 });
 
 

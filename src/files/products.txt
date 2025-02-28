@@ -11,7 +11,7 @@
     "thumbnails": {}
   },
   {
-    "id": 3,
+    "id": 2,
     "title": "fideos",
     "descripcion": "legumbre",
     "code": "aswe",
@@ -20,22 +20,24 @@
     "category": "comida"
   },
   {
-    "id": 4,
+    "id": 3,
     "title": "lentejas",
     "descripcion": "legumbres",
     "code": "1322",
     "price": "1500",
     "stock": "12",
-    "category": "comida"
+    "category": "comida",
+    "thumbnails": {}
   },
   {
-    "id": 5,
+    "id": 4,
     "title": "coca-cola",
     "descripcion": "bien fria",
     "code": "341",
     "price": "500",
     "stock": "34",
-    "category": "bebestible"
+    "category": "bebestible",
+    "thumbnails": {}
   },
   {
     "id": 6,
@@ -45,6 +47,7 @@
     "price": "300",
     "status": false,
     "stock": "12",
-    "category": "legumbres"
+    "category": "legumbres",
+    "thumbnails": {}
   }
 ]
