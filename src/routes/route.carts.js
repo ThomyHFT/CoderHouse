@@ -18,8 +18,8 @@ RouteCarts.get("/:cid", async (req, res) => {
   
       
       res.send("Carrito N°: " + req.params.cid + "\n Productos: " + JSON.stringify(carro.products));
-    } catch (e) {
-      res.status(500).send("Error al obtener el carrito: " + e.message);
+    } catch (error) {
+      res.status(500).send("Error al obtener el carrito: " + error.message);
     }
   });
 
@@ -36,7 +36,7 @@ RouteCarts.post("/",async(req,res)=>{
        
         res.send("Se creó el carrito N°: "+(ultimoId+1));
     }
-    catch(e){
+    catch(error){
         res.status(500).send("Error al crear el carrito: "+ error.message);
     }
 
@@ -59,7 +59,7 @@ RouteCarts.post("/:cid/product/:pid",async (req,res)=>{
                 carro= resultado;
                 console.log(resultado)
             }
-            catch(e){
+            catch(error){
                 res.status(500).send("Error al crear el carrito: "+ error.message);
             }
         }
@@ -75,8 +75,6 @@ RouteCarts.post("/:cid/product/:pid",async (req,res)=>{
         
         
         if(existe){
-          console.log("entre");
-          
           const update = await cartModel.updateOne(
             { id: req.params.cid, "products.idProd": productID },
             { $inc: { "products.$.quantity": 1 } }
@@ -99,12 +97,9 @@ RouteCarts.post("/:cid/product/:pid",async (req,res)=>{
 
         }
     }
-    catch(e){
-        res.status(404).send("No se pudo actualizar el carro");
+    catch(error){
+        res.status(404).send("No se pudo actualizar el carro"+ error);
     }
-    
-    
-   
     
     
 })
@@ -137,8 +132,8 @@ RouteCarts.put("/:cid/products/:pid", async (req, res) => {
       );
 
       res.send(`Cantidad del producto ${req.params.pid} en el carrito N° ${req.params.cid} actualizada a ${quantity}`);
-  } catch (e) {
-      console.error("Error al actualizar la cantidad del producto:", e);
+  } catch (error) {
+      console.error("Error al actualizar la cantidad del producto:", error);
       res.status(500).send("Hubo un problema al actualizar la cantidad del producto");
   }
 });
@@ -172,8 +167,8 @@ RouteCarts.put("/:cid", async (req, res) => {
       );
 
       res.send(`Carrito N° ${req.params.cid} actualizado correctamente`);
-  } catch (e) {
-      console.error("Error al actualizar el carrito:", e);
+  } catch (error) {
+      console.error("Error al actualizar el carrito:", error);
       res.status(500).send("Hubo un problema al actualizar el carrito");
   }
 });
@@ -203,8 +198,8 @@ RouteCarts.delete("/:cid/products/:pid", async (req, res) => {
 
         await cartModel.updateOne({ id: Number(req.params.cid) }, { $set: { products: carro.products } });
         res.send(`Producto eliminado correctamente del carrito N°: ${req.params.cid}\n` + JSON.stringify(carro));
-    } catch (e) {
-        console.error("Error al eliminar producto del carrito:", e);
+    } catch (error) {
+        console.error("Error al eliminar producto del carrito:", error);
         res.status(500).send("Hubo un problema al eliminar el producto del carrito");
     }
 });
@@ -225,8 +220,8 @@ RouteCarts.delete("/:cid", async (req, res) => {
         );
 
         res.send(`Todos los productos han sido eliminados del carrito N°: ${req.params.cid}`);
-    } catch (e) {
-        console.error("Error al eliminar los productos del carrito:", e);
+    } catch (error) {
+        console.error("Error al eliminar los productos del carrito:", error);
         res.status(500).send("Hubo un problema al eliminar los productos del carrito");
     }
 });

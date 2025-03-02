@@ -33,10 +33,15 @@ const connectDB = async () => {
 
 
 const socketServer= new Server(httpServer);
-const  CargarProductos = async()=>{
-    const productos = await productModel.find();
-    return productos
-}
+const CargarProductos = async () => {
+    try {
+        return await productModel.find();
+    } catch (error) {
+        console.error("Error al cargar productos:", error);
+        return [];
+    }
+};
+
 
 servidor.use(express.json());
 servidor.use(express.urlencoded({extended:true}));
@@ -44,18 +49,32 @@ servidor.engine("handlebars", handlebars.engine());
 servidor.set("views", __dirname + "/src/views");
 servidor.set("view engine", "handlebars");
 servidor.use(express.static(__dirname+"/src/public"));
+servidor.use((err, req, res, next) => {
+    console.error("Error en el servidor:", err.stack);
+    res.status(500).json({ status: "error", message: "Error interno del servidor" });
+});
 servidor.use("/api/productos", RouteProducts);
 servidor.use("/api/carts", RouteCarts);
 servidor.use("/realtimeproducts", RouteRealTimeProducts);
 servidor.get("/", async (req, res) => {
     try {
-        //PARA EL PROFE: LA QUERY FILTRA POR CATEGORIA DEL PRODUCTO EJEMPLO: comidas, bebidas etc.
         const limit = parseInt(req.query.limit) || 10;
         const page = parseInt(req.query.page) || 1;
-        const query = req.query.query ? { category: req.query.query } : {}; 
-        const sort = req.query.sort  ? { price: req.query.sort === "asc" ? 1 : -1 }: {}; 
+        
+        let query = {};
+        
+        if (req.query.query) {
+            query.category = req.query.query; 
+        }
+
+        if (req.query.available !== undefined) {
+            query.status = req.query.available === "true";
+        }
+
+        const sort = req.query.sort ? { price: req.query.sort === "asc" ? 1 : -1 } : {};
+
         const result = await productModel.paginate(query, { limit, page, sort, lean: true });
-    
+
         res.render("home", {
             products: result.docs,
             totalPages: result.totalPages,
@@ -67,15 +86,15 @@ servidor.get("/", async (req, res) => {
             prevLink: result.hasPrevPage ? `/?limit=${limit}&page=${result.page - 1}` : null,
             nextLink: result.hasNextPage ? `/?limit=${limit}&page=${result.page + 1}` : null
         });
-        //NO ENTENDI EN LA CONSIGNA DONDE DEBO MOSTRAR LA ESTRUCTURA SOLICITADA EN EL GET, YA QUE ESTA 
-        //RENDERIZA UNA VISTA CON LOS PRODUCTOS, ASI QUE LO HICE EN UN CONSOLE LOG 👌.
+
         console.log(result);
-        
 
     } catch (error) {
         res.status(500).send("Error al obtener productos: " + error.message);
+        next(error)
     }
 });
+
 
 servidor.get("/carts/:cid", async (req, res) => {
     try {
@@ -89,6 +108,7 @@ servidor.get("/carts/:cid", async (req, res) => {
         res.render("cart", { carro});
     } catch (error) {
         res.status(500).send("Error al obtener el carrito: " + error.message);
+        next(error)
     }
 });
 
@@ -124,27 +144,27 @@ socketServer.on("connection", socket => {
     });
 
     //espero el id para eliminar el producto
-    socket.on("eliminarProducto", async data=>{
-        try{
-            let resultado= await productModel.deleteOne({id:Number(data)})
-
-            if(!resultado){
-                socket.emit("respuestaEliminar", "error al eliminar el producto")
+    socket.on("eliminarProducto", async (data) => {
+        try {
+            const resultado = await productModel.deleteOne({ id: Number(data) });
+    
+            if (resultado.deletedCount === 0) {
+                socket.emit("respuestaEliminar", "Error: No se encontró el producto");
+            } else {
+                socket.emit("respuestaEliminar", "Producto eliminado correctamente");
             }
-            else{
-                socket.emit("respuestaEliminar", "se elimino correctamente el producto")
-            }
+    
             CargarProductos().then(productos => {
                 socket.emit("productos", productos);
             }).catch(error => {
                 console.error("Error al cargar productos:", error);
             });
-
+    
+        } catch (error) {
+            console.error("Error en eliminación:", error);
+            socket.emit("respuestaEliminar", "Error al eliminar el producto");
         }
-        catch (e){
-                console.error(e)
-        }
-        
-    })
+    });
+    
 
 });
