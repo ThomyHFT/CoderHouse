@@ -1,11 +1,10 @@
 
 import { Router } from "express";
-import fs from 'fs';
 import { productModel } from "../models/product.model.js";
+
 
 const RouteProducts=Router();
 RouteProducts.get("/",async(req,res)=>{
-
     try{
         let productos= await productModel.find()
         const limit=req.query.limit;
@@ -50,16 +49,11 @@ RouteProducts.post("/", async(req,res)=>{
         };
 
         let resutado = await productModel.create(newProduct)
-        res.send("Se agrego el nuevo producto")
-        
-
+        res.send("Se agrego el nuevo producto"+ resutado)
     }
     catch(e){
         res.status(404).send("No se actualizó el producto.");
     }
-
-    
-    
 })
 
 RouteProducts.put("/:pid",async(req,res)=>{
@@ -68,7 +62,7 @@ RouteProducts.put("/:pid",async(req,res)=>{
         let products= await productModel.find()
         const producto=products.find(item=>item.id=== Number(req.params.pid));
         let resultado = await productModel.updateOne({id:Number(req.params.pid)}, { $set: req.body } )
-        res.send("Producto Actualizado")
+        res.send("Producto Actualizado"+ resultado)
     }
     catch(e){
         res.status(404).send("No se encontró el producto.");
@@ -79,7 +73,7 @@ RouteProducts.delete("/:pid", async(req, res) => {
 
     try{
         let resultado= await productModel.deleteOne({id:Number(req.params.pid)})
-        res.send("se eliminó correctamente")
+        res.send("se eliminó correctamente"+ resultado)
     }
     catch(e){
          res.status(404).send("No se eliminó el producto.");

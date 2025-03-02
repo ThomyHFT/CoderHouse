@@ -1,20 +1,30 @@
-
+<script src="js/home.js"></script>
 <div class="product-container">
-        {{#each products}}
-        <div class="product-card">
-            <h2 class="product-title">{{title}}</h2>
-            <p class="product-description">{{descripcion}}</p>
-            <p class="product-code">Código: {{code}}</p>
-            <p class="product-price">${{price}}</p>
-            <p class="product-stock">Stock: {{stock}}</p>
-            <p class="product-category">Categoría: {{category}}</p>
-            <div class="product-status">
-                <p>Status: {{#if status}}<span class="status-available">Disponible</span>{{else}}<span class="status-unavailable">No disponible</span>{{/if}}</p>
-             </div>
-            <div class="product-thumbnails">
-                <p>Imagen del Producto (Opcional)</p>
-                <!-- Si tienes thumbnails puedes agregarlas aquí -->
-            </div>
+    {{#each products}}
+    <div class="product-card">
+        <h2 class="product-title">{{title}}</h2>
+        <p class="product-description">{{descripcion}}</p>
+        <p class="product-code">Código: {{code}}</p>
+        <p class="product-price">${{price}}</p>
+        <p class="product-stock">Stock: {{stock}}</p>
+        <p class="product-category">Categoría: {{category}}</p>
+        <div class="product-status">
+            <p>Status: {{#if status}}<span class="status-available">Disponible</span>{{else}}<span class="status-unavailable">No disponible</span>{{/if}}</p>
         </div>
-        {{/each}}
+        <img src="{{thumbnails}}" alt="">
+        <button class="add-to-cart" data-id="{{_id}}">Agregar al carro</button>
     </div>
+    {{/each}}
+</div>
+
+<div class="pagination">
+    {{#if hasPrevPage}}
+        <a href="{{prevLink}}" class="pagination-button">Anterior</a>
+    {{/if}}
+
+    <span class="pagination-info">Página {{page}} de {{totalPages}}</span>
+
+    {{#if hasNextPage}}
+        <a href="{{nextLink}}" class="pagination-button">Siguiente</a>
+    {{/if}}
+</div>

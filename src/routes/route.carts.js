@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { cartModel } from "../models/cart.model.js";
 import { productModel } from "../models/product.model.js";
+import mongoose from "mongoose";
+const { ObjectId } = mongoose.Types;
 
 
 const RouteCarts=Router();
@@ -45,31 +47,47 @@ RouteCarts.post("/:cid/product/:pid",async (req,res)=>{
 
     try{
         let carts= await cartModel.find();
-        const carro=carts.find(item=>item.id==req.params.cid);
+        let carro=carts.find(item=>item.id==req.params.cid);
         if(!carro){
-            res.status(404).send("No se encuentra el carrito");
-            return false;
+            try{
+                const ultimoId=carts.reduce((max,carts)=>(carts.id > max? carts.id: max),0);
+                const newCart={
+                id:ultimoId+1,
+                products:[]
+                };
+                let resultado = await cartModel.create(newCart)
+                carro= resultado;
+                console.log(resultado)
+            }
+            catch(e){
+                res.status(500).send("Error al crear el carrito: "+ error.message);
+            }
         }
-        const product=await productModel.findOne({id:Number(req.params.pid)})
-        if(!product.ok){
+        const productID=new ObjectId(req.params.pid)
+        const product=await productModel.findOne({_id: productID })
+        if(!product){
             res.status(404).send("No existe el producto");
             return false;
         }
-        const producto=await product.json();
-        const existe = carro.products.find(item => item.idProd === Number(req.params.pid));
+        console.log(product);
+        
+        const existe = carro.products.find(item => item.idProd.equals(productID));
+        
+        
         if(existe){
-            existe.quantity+=1;
-            let update = await cartModel.updateOne(
-                { id: Number(req.params.cid), "products.idProd": Number(req.params.pid) },
-                { $set: { "products.$.quantity": existe.quantity } } 
-            );
+          console.log("entre");
+          
+          const update = await cartModel.updateOne(
+            { id: req.params.cid, "products.idProd": productID },
+            { $inc: { "products.$.quantity": 1 } }
+          );
             res.send("Se actualizo la cantidad del producto, carro N°: " +req.params.cid +"\n"+ JSON.stringify(carro));
 
         }
         else{
             
             let newProduct = {
-                idProd: Number(req.params.pid),
+                idProd: productID,
                 quantity: 1
             };
         
@@ -91,42 +109,75 @@ RouteCarts.post("/:cid/product/:pid",async (req,res)=>{
     
 })
 
-RouteCarts.post("/:cid/product/:pid", async (req, res) => {
-    try {
-      let cart = await cartModel.findOne({ id: req.params.cid });
-  
-      if (!cart) {
-        return res.status(404).send("Carrito no encontrado");
+RouteCarts.put("/:cid/products/:pid", async (req, res) => {
+  try {
+      const { quantity } = req.body;
+      console.log(quantity)
+
+      if (!quantity || quantity < 1) {
+          return res.status(400).send("La cantidad debe ser un número mayor a 0");
       }
-  
-  
-      const product = await productModel.findOne({ id: Number(req.params.pid) });
-  
-      if (!product) {
-        return res.status(404).send("Producto no encontrado");
+
+      const carro = await cartModel.findOne({ id: Number(req.params.cid) });
+
+      if (!carro) {
+          return res.status(404).send("No se encontró el carrito");
       }
-  
- 
-      const existingProduct = cart.products.find(p => p.idProd.toString() === product._id.toString());
-  
-      if (existingProduct) {
-       
-        existingProduct.quantity += req.body.quantity || 1; 
-      } else {
-       
-        cart.products.push({
-          idProd: product._id,
-          quantity: req.body.quantity || 1 
-        });
+
+      const productID = new ObjectId(req.params.pid);
+      const existe = carro.products.find(item => item.idProd.equals(productID));
+
+      if (!existe) {
+          return res.status(404).send("El producto no está en el carrito");
       }
-  
-      await cart.save(); 
-      res.send("Producto actualizado correctamente en el carrito");
-  
-    } catch (e) {
-      res.status(500).send("Error al actualizar el carrito: " + e.message);
-    }
-  });
+
+      await cartModel.updateOne(
+          { id: Number(req.params.cid), "products.idProd": productID },
+          { $set: { "products.$.quantity": quantity } }
+      );
+
+      res.send(`Cantidad del producto ${req.params.pid} en el carrito N° ${req.params.cid} actualizada a ${quantity}`);
+  } catch (e) {
+      console.error("Error al actualizar la cantidad del producto:", e);
+      res.status(500).send("Hubo un problema al actualizar la cantidad del producto");
+  }
+});
+
+RouteCarts.put("/:cid", async (req, res) => {
+  try {
+      const { products } = req.body;
+
+      if (!Array.isArray(products)) {
+          return res.status(400).send("El formato de productos no es válido, debe ser un array");
+      }
+
+      const carro = await cartModel.findOne({ id: Number(req.params.cid) });
+
+      if (!carro) {
+          return res.status(404).send("No se encontró el carrito");
+      }
+
+      // Validamos que los productos existan en la base de datos
+      for (const item of products) {
+          const product = await productModel.findById(item.idProd);
+          if (!product) {
+              return res.status(404).send(`El producto con ID ${item.idProd} no existe`);
+          }
+      }
+
+      // Actualizar solo los productos en el carrito
+      await cartModel.updateOne(
+          { id: Number(req.params.cid) },
+          { $set: { products } }
+      );
+
+      res.send(`Carrito N° ${req.params.cid} actualizado correctamente`);
+  } catch (e) {
+      console.error("Error al actualizar el carrito:", e);
+      res.status(500).send("Hubo un problema al actualizar el carrito");
+  }
+});
+
 
 
 RouteCarts.delete("/:cid/products/:pid", async (req, res) => {

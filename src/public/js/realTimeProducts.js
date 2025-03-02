@@ -60,7 +60,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 price: document.getElementById('price').value,
                 status: status,
                 stock: document.getElementById('stock').value,
-                category: document.getElementById('category').value
+                category: document.getElementById('category').value,
+                thumbnails: {},
             };
             socket.emit("productos", productData);
             alert("Se agrego correctamente el producto")
